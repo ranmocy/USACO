@@ -9,6 +9,16 @@ int n, i, j;
 FILE *fin;
 FILE *fout;
 
+/*
+  Statistic the improper numbers into a matrix:
+  d[actually_is][should_be] += 1;
+  Then, we can make a exchange between 1->2 and 2->1
+  by the minimal one, which means we correct two positions
+  by cost one. Also for 1->3, 2->3.
+  Then there will only be one loop 1->2->3 or 3->2->1 remains.
+  Add it.
+  Finish.
+ */
 int main(){
   fin = fopen("sort3.in", "r");
   fout = fopen("sort3.out", "w");

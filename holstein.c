@@ -78,6 +78,15 @@ void search(bool current[MAX_G], int i)
 }
 
 
+/*
+  v is less than 25, g is less than 15.
+  The combination of 15 is 2^15=32768.
+  Times the time of checker 32768*25*15=12,288,000.
+  Which is satisfied.
+  So just enumerate all the combinations and check it.
+  Search the one with small number first.
+  If the result use less numbers of scoops, update.
+ */
 int main()
 {
   FILE *fin = fopen("holstein.in", "r");
