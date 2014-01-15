@@ -19,8 +19,6 @@ int map[MAX_P+1][MAX_P+1];
 int main()
 {
     FILE *fin = fopen("butter.in", "r");
-    FILE *fout = fopen("butter.out", "w");
-
     fscanf(fin, "%d %d %d", &N, &P, &C);
     int i, j, k, t;
     for (i = 1; i <= N; i++){
@@ -40,12 +38,29 @@ int main()
     }
     fclose(fin);
 
-    /* Floyd - to find the shortest path between all pairs */
-    for (k = 1; k <= P; k++)
-        for (i = 1; i <=P; i++)
-            for (j = i+1; j <= P; j++)
-                if (map[i][k] + map[k][j] < map[i][j])
-                    map[j][i] = map[i][j] = map[i][k] + map[k][j];
+    /* Dijkstra to find the shortest path betwen all pairs in O(VE) */
+    /* Not Floyd because O(V^3) is slower in sparse graph */
+    int u, v;
+    bool visited[MAX_P+1];
+    for (u = 1; u <= P; u++) {
+        for (i = 1; i <= P; i++) visited[i] = false;
+        while (true) {
+            v = 0;
+            int min = INF;
+            for (i = 1; i <= P; i++)
+                if (!visited[i] && (map[u][i] < min)){
+                    v = i;
+                    min = map[u][i];
+                }
+            if (v == 0) break;  /* Every nodes is visited */
+
+            visited[v] = true;
+            for (i = 1; i <= P; i++){
+                int t = map[u][v] + map[v][i];
+                if (t < map[u][i]) map[u][i] = t;
+            }
+        }
+    }
 
     /* Enum the answer */
     int ans = 0, d = INF;
@@ -59,6 +74,7 @@ int main()
         }
     }
 
+    FILE *fout = fopen("butter.out", "w");
     fprintf(fout, "%d\n", d);
     fclose(fout);
     return 0;
