@@ -5,25 +5,23 @@
 */
 
 #include <stdio.h>
-#define MAX_S 99   /* # of offers */
-#define MAX_N 5    /* # of different product */
-#define MAX_K 5    /* # of product in offer */
-#define MAX_C 999  /* range of product id */
-#define MAX_P 9999 /* range of product price */
+#define MAX_N 5        /* # of different product */
+#define MAX_K 5        /* # of product in offer */
+#define MAX_S 99+MAX_N /* # of offers = 99+MAX_N */
+#define MAX_C 999      /* range of product id */
+#define MAX_P 9999     /* range of product price */
+#define MAX_HASH 7776  /* (MAX_K+1)^MAX_N */
 #define INF MAX_N*MAX_K*MAX_P+1
 typedef enum { false, true } bool;
-/* typedef struct vector { */
-/*     int length, value[MAX_P]; */
-/* } vector; */
 typedef int vector[MAX_C+1];
 
 
-int S, C;
-vector offers[MAX_S], target;
+int S, C, H[MAX_HASH+1][MAX_S+1];
+vector offers[MAX_S+1], target;
 
 
 void copy(vector a, vector b)
-{int i; for (i = 1; i <= C; i++) b[i] = a[i];}
+{int i; for (i = 0; i <= C; i++) b[i] = a[i];}
 
 void add(vector a, vector b, vector c)
 {int i; for (i = 1; i <= C; i++) c[i] = a[i] + b[i];}
@@ -40,11 +38,24 @@ int divide(vector a, vector b)
     return ans;
 }
 
+bool empty(vector a)
+{int i; for (i = 1; i <= C; i++) if (a[i] != 0) return false; return true;}
+
+int hash(vector a)
+{
+    int i, ans=0, mul=1;
+    for (i = 1; i <= C; i++) {
+        ans += a[i] * mul;
+        mul *= MAX_K+1;
+    }
+    return ans;
+}
+
 void print(vector a)
 {int i; for (i = 0; i <= C; i++) printf("%d ", a[i]); printf("\n");}
 
-bool empty(vector a)
-{int i; for (i = 1; i <= C; i++) if (a[i] != 0) return false; return true;}
+void print_all()
+{int i; for (i = 1; i <= S; i++) print(offers[i]); print(target);}
 
 /*
   return the minimal price to build target with offers[s..S]
@@ -52,6 +63,7 @@ bool empty(vector a)
 int search(vector target, int s)
 {
     if (s > S) {if (empty(target)) return 0; else return INF;}
+    if (H[hash(target)][s] != INF) return H[hash(target)][s];
 
     vector next;
     copy(target, next);
@@ -61,6 +73,8 @@ int search(vector target, int s)
         if (t < ans) ans = t;
         minus(next, offers[s], next);
     }
+
+    H[hash(target)][s] = ans;
     return ans;
 }
 
@@ -109,11 +123,8 @@ int main()
         for (i = 1; i <= old_c; i++) {
             if (appeared[i]) {
                 C++;
-                target[C] = target[i]; target[i] = 0;
-                for (s = 1; s <= S; s++) {
-                    offers[s][C] = offers[s][i];
-                    offers[s][i] = 0;
-                }
+                target[C] = target[i];
+                for (s = 1; s <= S; s++) offers[s][C] = offers[s][i];
             }
         }
     }
