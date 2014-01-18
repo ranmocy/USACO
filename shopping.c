@@ -73,7 +73,7 @@ int search(vector target, int s)
  */
 int main()
 {
-    {
+    {  /* read input */
         FILE *fin = fopen("shopping.in", "r");
         fscanf(fin, "%d", &S);
         int i, s, n, k, c;
@@ -100,7 +100,32 @@ int main()
         fclose(fin);
     }
 
-    {
+    {  /* compress C in the matrix */
+        int i, s, old_c = C;
+        bool appeared[MAX_C+1];
+        C = 0;
+
+        for (i = 1; i <= old_c; i++) appeared[i] = (target[i] > 0);
+        for (i = 1; i <= old_c; i++) {
+            if (appeared[i]) {
+                C++;
+                target[C] = target[i]; target[i] = 0;
+                for (s = 1; s <= S; s++) {
+                    offers[s][C] = offers[s][i];
+                    offers[s][i] = 0;
+                }
+            }
+        }
+    }
+
+    {  /* init hash table */
+        int i, j;
+        for (i = 1; i <= MAX_HASH; i++)
+            for (j = 1; j <= MAX_S; j++)
+                H[i][j] = INF;
+    }
+
+    {  /* output */
         FILE *fout = fopen("shopping.out", "w");
         fprintf(fout, "%d\n", search(target, 1));
         fclose(fout);
