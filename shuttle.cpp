@@ -18,35 +18,19 @@ void move(int index, int current) {
     q.push(index + (n - current));
 }
 
-void middle(int current) {
-    if (current <= 0) {
-        return;
-    }
-    if (current % 2 == 0) {
-        // moving white marbles
-        // BWBW_
-        for (int i = 2 * current - 1; i >= 1; i -= 2) {
-            move(i, current);
-        }
-    } else {
-        // moving black marbles
-        // _WBWBWB
-        for (int i = 3; i <= 2 * current + 1; i += 2) {
-            move(i, current);
-        }
-    }
-}
-
 void front(int current) {
     if (current <= 0) {
         return;
     }
     front(current - 1);
-    middle(current - 1);
     if (current % 2 == 0) {
-        move(2 * current + 1, current);
+        for (int i = 2 * current + 1; i >= 1; i -= 2) {
+            move(i, current);
+        }
     } else {
-        move(1, current);
+        for (int i = 1; i <= 2 * current + 1; i += 2) {
+            move(i, current);
+        }
     }
 }
 
@@ -55,17 +39,19 @@ void end(int current) {
         return;
     }
     if (current % 2 == 0) {
-        move(2, current);
+        for (int i = 2; i <= 2 * current; i += 2) {
+            move(i, current);
+        }
     } else {
-        move(2 * current, current);
+        for (int i = 2 * current; i >= 2; i -= 2) {
+            move(i, current);
+        }
     }
-    middle(current - 1);
     end(current - 1);
 }
 
 void solve() {
     front(n);
-    middle(n);
     end(n);
 }
 
