@@ -1,3 +1,5 @@
 *.run
 *.run.*
 *.out
+
+node_modules/
